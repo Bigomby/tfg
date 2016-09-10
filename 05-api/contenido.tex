@@ -1,0 +1,139 @@
+\chapter{API}\LABCHAP{API}
+\pagestyle{esitscCD}
+
+Lo primero y más importanta del sistema son los usuarios. Serán quienes exploten
+las funcionalidades del sistema. Puesto que la finalidad de la plataforma es
+establecer una comunicación entre los dispositivos de un cliente y su lógica,
+tenemos dos roles:
+
+\begin{itemize}\itemsep1pt \parskip0pt \parsep0pt
+\item \indexit{Dispositivos:} Los componentes que obtienen información o
+controlan elementos.
+\item \indexit{Lógica:} El software del usuario que procesan la información
+obtenida y controlan los dispositivos.
+\end{itemize}
+
+Para que el usuario pueda interactuar con la plataforma para conocer el estado
+de los dispositivos se proveerá de una API RESTful que permita:
+
+\begin{itemize}\itemsep1pt \parskip0pt \parsep0pt
+\item \indexit{Registro de usuarios}
+\item \indexit{Administración de flotas}
+\item \indexit{Monitorización de dispositivos}
+\end{itemize}
+
+\section{Registro de usuario}
+
+Para crear un usuario se enviará un mensaje HTTP a la API con el contenido del
+código \ref{pet-01}:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Petición para creación de usuario}, breaklines=true, label=pet-01]
+POST /users
+
+{
+  "email": "yo@dominio.com",
+  "password": "secreto"
+}
+\end{lstlisting}
+\end{minipage}
+
+Una vez registrados, se puede hacer login y realizar peticiones autenticadas a
+la API. Para realizar un \emph{login} debemos enviar el contenido del código \ref{pet-01}.
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Petición de login}, breaklines=true, label=pet-02]
+POST /users/login
+
+{
+  "email": "yo@dominio.com",
+  "password": "secreto"
+}
+\end{lstlisting}
+\end{minipage}
+
+Como respuesta se obtiene el \texttt{acess\_token} y \texttt{user\_id}:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Respuesta a login}, breaklines=true, label=res-01]
+{
+  "id": "<access_token>",
+  "ttl": 1209600,
+  "created": "2013-12-20T21:10:20.377Z",
+  "userId": "<user_id>"
+}
+\end{lstlisting}
+\end{minipage}
+
+A partir de ahora podemos realizar peticiones autorizadas enviando en la
+cabezera del mensaje \texttt{HTTP} el \texttt{access\_token} el campo
+  \texttt{Authorization}.
+
+\section{Obtención de Fleet Key}
+
+Para crear una flota es necesario haber realizado el proceso de registro y
+disponer de un \texttt{user\_id} y \texttt{acess\_token}. Ser realizará la
+petición indicada en el código \ref{pet-03}.
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Creación de \texttt{fleet\_key}}, breaklines=true, label=pet-03]
+POST /users/<user_id>/fleets
+
+Authorization: <access_token>
+\end{lstlisting}
+\end{minipage}
+
+Si todo ha ido correctamente se obtendrá como respuesta el mensaje de respuesta
+\ref{res-02}
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Obtencion de \texttt{fleet\_key}}, breaklines=true, label=res-02]
+{
+  "uuid": "<fleet_uuid>"
+}
+\end{lstlisting}
+\end{minipage}
+
+\section{Registro de dispositivos}
+
+Cuando el dispositivo se inicie por primera vez, deberá realizar un proceso de
+registro en el que usará la \texttt{fleet\_key} para poder obtener un
+\texttt{uuid} y un \texttt{secret}. Para que un dispositivo pueda registrarse deberá ser capaz de comunicarse
+mediante \texttt{HTTP}, en caso contrario, será necesario el uso de un dispostivo
+intermedio capaz de realizar esta labor en nombre del dispositivo.
+
+A este dispositivo intermedio lo llamaremos \texttt{hub} que puede ser cualquier
+dispositivo que sea capaz de enviar mensajes \texttt{HTTP} y \texttt{MQTT} y
+reenviarlos en el protocolo que sea a los dispositivos reales. Podría ser, por
+ejemplo, un \emph{router} o una \emph{Raspberry Pi}.
+
+Un caso podría ser un \emph{Arduino} que se comunicase mediante un módulo \texttt{NRF24} con
+un programa que se ejecute en una \emph{Raspberry Pi}. Será dicho programa de la
+\emph{Raspberry Pi} el responsable de realizar el registro, de forma que el dispositivo no
+tiene porqué tener conocimiento del proceso ni de la plataforma. Cabe destacar
+que, en este caso, será la aplicación en cuestión quien debe conocer la \texttt{fleet\_key}.
+
+Esto puede ser útil en caso de tener dispositivos que no podemos adaptar al
+sistema, bastaría con crear este intermediario para poder usar el dispositivo
+con la plataforma.
+
+En cualquier caso, el procedimiento será enviar un mensaje \texttt{HTTP} a la
+API con el contenido de la petición \ref{pet-04}.
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Registro de dispositivo}, breaklines=true, label=pet-04]
+POST /fleets/<fleety_key>/registerMote
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=TeX,caption={Respuesta de registro de dispositivo}, breaklines=true, label=res-03]
+{
+  "uuid":   "<Nuevo UUID de dispositivo>",
+  "secret": "<Nuevo secreto>"
+}
+\end{lstlisting}
+\end{minipage}
+
+Una vez obtenidas las credenciales para poder enviar datos deberían persistirse
+para futuros usos.
