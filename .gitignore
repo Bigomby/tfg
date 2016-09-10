@@ -196,4 +196,4 @@ TSWLatexianTemp*
 # auto folder when using emacs and auctex
 /auto/*
 
-drag_handle
+*.tmp
