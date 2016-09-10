@@ -1,0 +1,82 @@
+\chapter{Dispositivos y Módulos}\LABCHAP{DISPS}
+\pagestyle{esitscCD}
+
+\section{Dispositivos}
+
+Los dispositivos son elementos externos al sistema. El propio sistema está
+diseñado para proveer servicios a estos dispositivos, por lo que podemos verlos
+como un especie de usuario de la plataforma.
+
+Cada dispositivo debe estar registrado en el sistema para poder interactuar con
+él, por lo que deberán implementar un proceso en el cual puedan darse de alta en
+la plataforma. Cada dispositivo estará asociado a un usuario, esto quiere decir
+que a la hora de registrarse, el dispositivo debe proveer cierta información
+para que la plataforma pueda determinar a qué usuario quedará asociado.
+
+\subsection{Flotas}
+
+La forma de asociar un dispositivo a un usuario es mediante las \textbf{flotas}.
+Las flotas son agrupaciones independientes de dispositivos que puede crear el
+usuario para gestionarlos. Cada usuario puede tener múltiples flotas. Al crear
+una flota, se generará de forma automática una \texttt{fleet\_key}, que es una clave única
+que representa a cada flota. Cuando un dispositivo ejecuta el proceso de
+registro deberá proveer la clave para que el sistema lo reconozca como
+perteneciente a su flota correspondiente a la hora de registrarlo en la base
+de datos.
+
+Dispositivos de diferentes flotas no pueden comunicarse entre ellos de forma
+directa, es decir, si en una flota un dispositivo publica en el \emph{topic}
+\texttt{temperature} y otro dispositivo de una flota diferente está suscrito
+a este \emph{topic} no recibirá el mensaje. Sin embargo, siempre será posible
+que una aplicación o dispositivo pertenezca a ambas flotas y sea capaz de
+reenviar los mensajes.
+
+
+\section{Módulos}
+
+Los módulos son aplicaciones que simulan ser dispositivos. Su objetivo es actuar
+como intermerdiario entre los dispositivos reales y la plataforma.
+
+El dispositivo en el que corren los módulos se denominará hub. Una Raspberry Pi
+puede ser muy adecuado como hub ya que puede implementar los protocolos
+necesarios y puede comunicarse con los dispostivos reales usando un adaptador
+Bluetooth o ZigBee.
+
+Existen varios escenarios donde puede ser interesante usar módulos:
+
+\subsection{Caso 1}
+Los dispositivos no tienen capacidad de enviar mensajes \texttt{HTTP} o \texttt{MQTT}, que son los
+protocolos usados por la plataforma. En tal caso, se puede crear un módulo que
+corra en otro dispositivo capaz de implementar estos protocolos y, al mismo
+tiempo, sea capaz de comunicarse con los dispositivos reales. Estos módulos
+tienen la responsabilidad de registrarse como si fuesen dispositivos reales,
+obtener datos y reenviarlos a los dispositivos correspondientes. Útiles para
+dispositivos que usan \texttt{Bluetooth} o \texttt{ZigBee} como protocolo de comunicación.
+
+\subsection{Caso 2}
+Los dispositivos ya existen y no es posible modificar el software para que se
+comunique con la plataforma directamente. Por ejemplo porque los dispositivos
+los fabrica un tercero. En este caso, el módulo tiene una función de ``pasarela''
+entre los dispositivos reales y la plataforma.
+
+\section{Conexión al broker}
+
+Para enviar datos a la plataforma será necesario disponer de los siguientes datos:
+
+\begin{itemize}\itemsep1pt \parskip0pt \parsep0pt
+\item \texttt{host}: El nombre o dirección IP del equipo donde está desplegada la plataforma.
+\item \texttt{puerto}: El puerto donde se reciben los mensajes de los dispositivos mediante \texttt{MQTT}.
+\item \texttt{user}: El \texttt{uuid} del dispositivo, generado en el proceso de registro.
+\item \texttt{password}: La contraseña del dispositivo, generada en el proceso de registro.
+\item \texttt{topics}: \texttt{<fleet\_key>/\#}. Donde ``\#'' es el nombre original del topic.
+\end{itemize}
+
+A la hora de publicar mensajes en un topic, el dispositivo debe preceder el
+topic con el \texttt{fleet\_key}, por ejemplo, si se quiere publicar al topic
+``temperature'', deberá enviarse el mensaje al topic \texttt{<fleet\_key>/temperature}.
+
+Para suscribirse a un topic se aplicará la misma regla, precediendo el nombre
+del topic original por el Fleet Key.
+
+Se debe usar usar TLS ya que sino las credenciales viajarán en texto plano y
+pueden ser capturadas por un tercero.
