@@ -2,8 +2,6 @@
 \chapter{Arquitectura de la plataforma}\LABCHAP{ARQ}
 \pagestyle{esitscCD}
 
-\section{Diseño de la arquitectura}
-
 Con motivo de no hacer esta
 memoria demasiado extensa, se omitirán todas las comparativas que se han hecho
 entre diferentes protocolos y servicios y todos los cambios realizados desde la
@@ -15,38 +13,36 @@ enorme proceso de simplificación en el cual se han eliminado bucles, conexiones
 redundantes, servicios innecesarios, etc. Se puede decir que la arquitectura
 actual consta de los componentes mínimos para llevar a cabo su funcionalidad.
 
+\section{Funcionalidad}
+
 Todas las decisones realizadas para elegir la tecnología más adecuada a la hora
-de la implementación del sistema se basan en cinco premisas:
+de la implementación del sistema se basan en cuatro premisas:
 
 \begin{itemize}\itemsep1pt \parskip0pt \parsep0pt
-\item \indexit{Bidireccionalidad:} Los datos debe poder fluir en ambos sentidos. Desde el
-dispositivo hasta la lógica del usuario y en sentido contrario.
-\item \indexit{Tiempo real:} Los datos deben pasar de un extremo a otro en un tiempo mínimo.
+\item \indexit{Bidireccionalidad:} Los datos debe poder fluir en ambos sentidos.
+Desde un extremo de la arquitectura al otro y viceversa.
+\item \indexit{Tiempo real:} Los datos deben pasar de un extremo a otro en un
+tiempo mínimo. Es decir, debe haber el menor número de paradas posibles.
 \item \indexit{Persistencia:} El sistema debe ser capaz de almacenar los datos obtenidos para
-que puedan ser consultados en cualquier momento. Además debe permitirse el uso
-de filtros para obtener la información.
-\item \indexit{Monitorización:} El sistema debe ofrecer unas herramientas que ofrezcan
-información acerca del estado de sus componentes.
+que puedan ser consultados en cualquier momento.
 \item \indexit{Tenencia múltiple:} Un despliegue de la plataforma debe permitir ser usada por
-varios usuarios u organizaciones.
+varios usuarios u organizaciones simultáneamente de forma completamente aislada.
 \end{itemize}
 
-Además, el diseño debe ser lo suficientemente genérico para que cualquier
+Además el diseño debe ser lo suficientemente genérico para que cualquier
 usuario, independientemente del tipo de datos que quiera enviar, pueda hacer uso
 del sistema.
-
-\section{Funcionalidad de la arquitectura}
 
 \subsection{Bidireccionalidad}
 
 La plataforma está diseñada con el objetivo de permitir la comunicación de forma
-bidireccional. Como tiene una interfaz con los dispositivos y otra con los
-servicios del cliente, tenemos que garantizar que los protocolos que usemos en
+bidireccional. Como tiene una interfaz con los dispositivos y otra con la lógica
+de negocio del usuario, tenemos que garantizar que los protocolos que usemos en
 ambos casos nos permitan bidireccionalidad.
 
 \subsubsection{Bidireccionalidad en la interfaz con los servicios del cliente}
 
-En el paradigma clásico de internet (HTTP), la comunicación siempre va de
+En el paradigma clásico de internet (\texttt{HTTP}), la comunicación siempre va de
 cliente a servidor. El servidor nunca envía ningún dato al cliente, sino que el
 cliente debe obtener los datos como respuesta a una petición que él mismo
 realice, pero no puede ser notificado en el momento de que haya un nuevo dato.
@@ -61,15 +57,9 @@ supone una reserva y posterior liberación de recursos.
 
 Afortunadamente, en la actualidad existen numerosas alternativas a este método
 que permiten la comunicación bidireccional entre cliente y servidor de forma
-eficiente. Este paradigma se conoce como comet.
+eficiente.
 
-\epigraph{En el desarrollo web, Comet es un neologismo para describir un modelo de
-aplicación web en el que una petición HTTP mantenida abierta permite a un
-servidor web enviar datos a un navegador por Tecnología Push, sin que el
-navegador los solicite explícitamente. Comet es un término paraguas de múltiples
-técnicas para conseguir esta interacción.}{Wikipedia}
-
-Hay varias formas de implementar comet, se ha elegido el protocolo STOMP, que
+Se ha elegido el protocolo STOMP, que
 permite a los servicios del cliente establecer una conexión TCP persistente y
 recibir datos en tiempo real sin realizar consultas períodicas. La conexión TCP
 se mantiene y así se evita estar constantemente reservando y liberando recursos.
@@ -129,19 +119,6 @@ Obviamente, para el segundo caso es obligatorio que el sistema sea capaz de
 persistir los datos. Por ello el sistema dispondrá de diferentes bases de datos
 para poder llevar a cabo esta tarea.
 
-\subsection{Monitorización}
-
-El cliente en cualquier momento debe saber en qué estado se encuentra la
-plataforma, para ello primero tendremos que analizar el sistema continuamente y
-exponer al cliente los datos que puedan ser de su interés.
-
-Para ello se hará uso de tecnología como ELK, Prometheus, Consul y otras que
-obtendrán métricas de uso del sistema: recursos usados y otros parámetros que
-puedan ser relevantes para conocer el funcionamiento del sistema. De todos estos
-datos obtenidos, podemos exponer a los clientes los que puedan ser más
-interesantes para ellos, como por ejemplo, el volumen de datos persistidos o el
-tráfico cursado ya que pueden ser usados par la tarificación del servicio.
-
 \subsection{Tenencia múltiple}
 
 La plataforma debe permitir el uso por múltiples organizaciones o usuarios.
@@ -153,7 +130,7 @@ otro.
 Otra ventaja de la tenencia múltiple es que una organización puede realizar un
 despliegue de la plataforma y ofrecer los servicios a otras organizaciones.
 
-\section{Estructura}
+\section{Diseño}
 
 \begin{figure}[htbp]
 \centering
@@ -190,52 +167,71 @@ A continuación se puede ver un esquema de la arquitectura final en \FIG{figura2
 \label{fig:figura2}
 \end{figure}
 
-\section{Elementos}
+\section{Componentes}
 
-En la figura se pueden ver los elementos de la plataforma, situados entre los
+En la \FIG{figura2} se pueden ver los elementos de la plataforma, situados entre los
 dispositivos y la lógica de negocio del usuario. Tenemos los siguientes
 componentes:
 
-\subsection{Elementos finales}
+\subsection{API}
 
-Dispositivos: Los dispositivos son los elementos que se pretenden comunicar con
-la lógica del usuario. Un dispositivo puede ser cualquier cosa que envíe o
-reciba datos. Pueden desempeñar el rol de sensor, actuador o ambos. Están
-totalmente fuera del ámbito de la plataforma, es responsabilidad del usuario su
-desarrollo y mantenimiento.
-
-Módulos: Una alternativa para poder conectar dispositivos a la plataforma es
-usar módulos o dispositivos virtuales. En este caso se crearía una aplicación
-que se comunica directamente con la plataforma y simula ser un dispositivo.
-Hace de puente entre los dispositivos reales, de forma que se pueden simplificar
-los dispositivos. Es útil para adaptar a la plataforma dispositivos existentes.
-
-\subsection{Elementos de la plataforma}
-
-API: Es el componente que permite a los usuarios comunicarse con la plataforma.
+Es el componente que permite a los usuarios comunicarse con la plataforma.
 Tanto los dispositivos como los servicios propios del usuario usarán la API. Es
 tarea de la API el registro de los dispositivos, el registro de usuarios y otras
 tareas de gestión así como permite hacer consultas para obtener datos
 almacenados en la plataforma.
 
-Sistema de mensajes: Es el componente central de la arquitectura. Por él pasan
+La API es una aplicación que ha sido desarrollada como parte de este trabajo.
+Se ha utilizado \texttt{Node.js} para su implementación.
+
+\subsection{Broker}
+
+Es el componente central de la arquitectura. Por él pasan
 los mensajes enviados por los otros elementos. Permite balanceo de carga entre
 múltiples instancias, persistencia, sincronización, etc.
 
-Bases de datos: La persistencia del sistema. Múltiples bases de datos se
+Como \emph{broker} se ha usado \textbf{RabbitMQ} ya que es uno de los más
+extendidos por su capacidad para escalar, su robustez y su extensibilidad.
+
+\subsection{Bases de datos}
+
+La persistencia del sistema. Múltiples bases de datos se
 encargan de almacenar los datos recibidos que deben ser persistidos. También
 será necesaria almacenar información de usarios y dispositivos registrados.
 
-Procesador de flujos: Este componente obtiene los datos en crudo de la cola de
-mensajes, los trata y los almacena en la bases de datos. Puede ser interesante
+Para almacenamiento de credenciales se usará una base de datos \texttt{MongoDB}
+por ser una de las más populares. Para persitir los datos del usuario que llegan
+al sistema se usa \texttt{RethinkDB}. La característica más importante de esta
+base de datos es que, a diferencia de las bases de datos convencionales, las
+aplicaciones no tienen que consultarla de forma periódica para detectar nuevos
+datos o modificaciones en éstos, sino que es la propia base de datos la que
+notifica a las aplicaciones.
+
+\subsection{Backend de autorización}
+
+Debido a que es necesario controlar el acceso a la plataforma a los dispositivos
+y a las aplicaciones, necesitamos un control de acceso. En este escenario, el control
+de acceso debe realizarlo el \emph{broker}, en este caso en particular lo hará
+\texttt{RabbitMQ}. Gracias a un plugin para éste, podemos delegar la autenticación
+en una aplicación externa, de forma que el \emph{broker} realizará una petición
+\texttt{HTPP} a una aplicación cuando un cliente se intente conectar, siendo esta
+aplicación quien decida si se permite o no.
+
+El \emph{backend de autorización} es la aplicacion encargada de tomar las decisiones.
+Tendrá conectividad con la base de datos donde se encuentran las credenciales y
+verificará que las conexiones son legítimas.
+
+Esta aplicación también ha sido desarrollada como parte del trabajo, una vez más
+usando \texttt{Node.js} como plataforma.
+
+\subsection{Procesador de flujos}
+
+Este componente obtiene los datos en crudo de la cola de
+mensajes, los trata y los almacena en la base de datos. Puede ser interesante
 añadir algunos metadatos a la información recibida antes de almacenarse.
 
-Monitorización: Son los servicios encargados de obtener información sobre el
-consumo y el estado de los elementos en del sistema. Detectará caídas de
-componentes y posibles cuellos de botella.
+Al mismo tiempo, la base de datos notificará a este componente cuando termine de
+persistir el dato y este componente lo enviará a una cola del \emph{broker} donde
+posteriormente podrá leerlo una aplicación que se conecte a la plataforma.
 
-\subsection{Elementos del usuario}
-
-Lógica de cliente: El cometido de la plataforma es ofrecer un servicio a esta
-lógica para que pueda comunicarse con los elementos finales. Se comunicará con
-la API y el sistema de colas para obtener y enviar datos.
+También se ha desarrollado como parte del trabajo en \texttt{Node.js}.

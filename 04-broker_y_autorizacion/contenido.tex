@@ -1,0 +1,34 @@
+\chapter{Broker y autorización}\LABCHAP{DISPS}
+\pagestyle{esitscCD}
+
+\section{RabbitMQ}
+
+Como \emph{broker} se usará \texttt{RabbitMQ}. El \emph{broker} es una de los
+componentes más importantes de la plataforma, por no decir el más importante de
+todos. Cada mensaje que llega al sistema desde un elemento externo, ya sea
+un dispositivo o una aplicación del usuario debe hacerlo a través del \emph{broker}.
+Además, los servicios internos de la plataforma también usan el \emph{broker} para
+la comunicación.
+
+\texttt{RabbitMQ} nos ofrece todo el sistema de colas de \texttt{AMQP} que ya
+hemos descrito anteriormente, por lo que todos los datos de la plataforma
+estarán en colas. Esto permite soportar picos de tráfico, ya que si los
+servicios o las bases de datos no son capaces de soportar una carga elevada los
+mensajes simplemente se encolarán y no serán descartados.
+
+Además, gracias a unos plugins oficiales, es posible configurar a \texttt{RabbitMQ}
+para que sea capaz de recibir mensajes \texttt{MQTT} y \texttt{STOMP}. Es importante
+aclarar que en realidad no existe un \emph{broker} como tal para estos protocolos,
+sino que realmente se hace una adaptación a \texttt{AMQP}, es decir, que aunque los
+mensajes lleguen en formato \texttt{MQTT}, éstos se guardarán en colas \texttt{AMQP}
+y los leerán servicios mediante este protocolo. Los servicios del núcleo de la
+plataforma no implementan ni \texttt{MQTT} ni \texttt{STOMP}.
+
+Un ejemplo de comunicación sería:
+
+\begin{Verbatim}[frame=single]
+DISPOSITIVO -> ADAPTADOR MQTT -> AMQP -> STREAM PROCESSOR -> RETHINKDB ->
+-> STREAM PROCESSOR -> AMQP -> STOMP -> NAVEGADOR WEB
+\end{Verbatim}
+
+Por supuesto en sentido contrario también funcionaría.

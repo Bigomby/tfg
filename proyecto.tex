@@ -5,6 +5,8 @@
 %:Paquete de estilos propuesto
 \usepackage{libroETSI}
 
+\usepackage{fancyvrb}
+
 %:Paquete específico para cargar tikz (y sus librerías) y pgfplots
 \usepackage{dtsc-creafig}
 
@@ -82,8 +84,10 @@ twoside}
 
 \setcounter{tocdepth}{4}						% El nivel hasta el que se muestra el índice
 
+\renewcommand{\baselinestretch}{1.35}
 
 %:Empieza el documento
+
 
 \begin{document}
 %:Para incluir toda la referencia bibliográfica aunque no se cite, descomente la siguiente línea
@@ -111,7 +115,7 @@ twoside}
  	linkcolor=black, %Tocar para poner color en enlaces
 	pdfauthor={\elautor},
 	pdftitle={\nombretrabajo,\eltitulo},
-	pdfkeywords={Latex, edición, formato de texto}
+	pdfkeywords={iot, sistemas integrados, protocolos}
 	}
 
 \portadaPFC{figuras/LogoUS.pdf}{figuras/LogoTSC.pdf} %logo de la Universidad y logo del departamento, si lo hubiera. Para cambiar el pie de página con los logos, debe editarse el fichero ediciónPFC.sty
@@ -136,11 +140,12 @@ twoside}
 
 \include{01-introduccion/introduccion}
 \include{02-arquitectura/contenido}
-\include{03-nodejs/contenido}
-\include{04-mqtt/contenido}
-\include{05-amqp/contenido}
-\include{06-dispositivos/contenido}
-\include{07-api/contenido}
+\include{03-mqtt_stomp_amqp/contenido}
+\include{04-broker_y_autorizacion/contenido}
+\include{05-api/contenido}
+\include{06-bases_de_datos/contenido}
+\include{07-dispositivos_y_modulos/contenido}
+\include{08-logica_de_negocio/contenido}
 
 %%:Empezamos con los apéndices, que irían en uno o más ficheros.
 %% Es necesario incluir estos ficheros entre el entorno

@@ -32,3 +32,50 @@ de las diferentes partes pueden surgir más problemas.
 
 Todo esto no hace más que suponer una barrera para los fabricantes que puede
 desembocar en que el proyecto nunca sea llevado a cabo.
+
+\section{Escenario}
+
+\subsection{Usuario}
+
+Llamaremos usuario a la persona, personas u organización que utiliza la plataforma
+que vamos a diseñar para su beneficio. Queremos cubrir una necesidad, que en
+este caso es comunicar dos elementos: los dispositivos integrados del usuario y
+la lógica de negocio del usuario.
+
+Por supuesto, esto deberá de hacerse de forma totalmente transparente y de la
+forma más eficiente posible. El usuario no tiene por qué saber cómo funciona
+el sistema de forma interna, sólamente deberá saber cómo interactuar con él.
+
+\subsection{Dispositivos integrados}
+
+En primer lugar tenemos los dispositivos del usuario, que son los
+elementos que queremos dotar de conectividad para que puedan comunicarse de
+forma eficiente y robusta. Debemos tener en cuenta que cuando hablamos de
+sistemas integrados no podemos suponer que contamos con los mismo recursos
+que en un equipo estándar. La cantidad de memoria, de almacenamiento, de
+ancho de banda o incluso de energía pueden ser muy limitadas, por lo que no
+podemos aplicar las mismas soluciones que aplicaríamos en un entorno donde
+nos sobran dichos recursos.
+
+Con esto se quiere decir que protocolos como \texttt{HTTP} que funcionan de
+forma correcta en un equipo actual no tienen por qué funcionar igual de bien
+en un dispositivo que cuenta con poca memoria.
+Si en lugar de \emph{WiFi} se usa un protocolo más simple orientado a eficiencia
+energética, \texttt{HTTP} puede ser muy pesado y su implementación puede consumir
+mucha memoria, energía o ancho de banda.
+
+Tendremos que buscar soluciones acordes a esta tecnología.
+
+\subsection{Lógica de negocio}
+
+Es el conjunto de \emph{software} que desea comunicarse con los dispositivos, ya
+sea para recolectar los datos que unos sensores captan o para accionar unos actuadores.
+Toda esta lógica pertenece al usuario y puede ser desde un pequeño \emph{script}
+en \emph{Python} hasta una compleja infraestructura desplegada en \emph{Amazon}.
+Puesto que tiene otras características diferentes a los dispositivos tendrán otros
+requisitos diferentes, por lo que la forma en la que interaccionarán con la plataforma
+no tiene por qué ser la misma que los dispositivos.
+
+Uno de los requisitos para la lógica de negocio es que debe poder funcionar en
+un navegador web, de forma que se podría crear una aplicación web que se comunique
+\textbf{directamente} con la plataforma.
