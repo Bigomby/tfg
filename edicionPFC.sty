@@ -2,21 +2,21 @@
 
 %:Para poner la marca de agua
 \ifdraft{
-\makeatletter		
-\SetBgContents{} 
-\SetBgOpacity{1} 
-\SetBgScale{1} 
+\makeatletter
+\SetBgContents{}
+\SetBgOpacity{1}
+\SetBgScale{1}
 \AddEverypageHook{%
 \ifthenelse{\isodd{\thepage}}
 {\SetBgAngle{0}%
-\SetBgHshift{0} 
+\SetBgHshift{0}
 \SetBgColor{gray!75}%
  \SetBgContents{\copyright\ \afiliafont \elautor\;\afiliafont \eldepartamento\;\afiliafont\launiversidad\; \today  \; \timestring}}%
 {\SetBgAngle{0}
 \SetBgColor{gray!75}%
-\SetBgHshift{0} 
+\SetBgHshift{0}
    \SetBgContents{\afiliafont \timestring\; \today \; \afiliafont \eldepartamento\;\afiliafont\launiversidad \; \copyright\ \afiliafont \elautor}}%
-\bg@material} 
+\bg@material}
 \makeatother
 }{}
 %:Fin de la marca de agua
@@ -62,7 +62,7 @@
 	\pgfdeclarelayer{background}
 	\pgfdeclarelayer{foreground}
 	\pgfsetlayers{background,main,foreground}
-	
+
 	\pagestyle{empty}
 	\definecolor{etsi}{RGB}{83,16,12}
 
@@ -73,56 +73,56 @@
 
 		\node[anchor=north west, %anchor is upper left corner of the graphic
 		      	xshift=-1.2mm, %shifting around
-		      	yshift=-204mm] 
+		      	yshift=-204mm]
 		     	at (current page.north west) %left upper corner of the page
-		     	{\includegraphics[width=35mm, height=5.6cm]{figuras/edificio01.pdf}}; 
-				
+		     	{\includegraphics[width=35mm, height=5.6cm]{figuras/edificio01.pdf}};
+
 		\node[anchor=north west, %anchor is upper left corner of the graphic
 		      	xshift=175mm, %shifting around
-		      	yshift=-215mm] 
+		      	yshift=-215mm]
 		     	at (current page.north west) %left upper corner of the page
-		     	{\includegraphics[height=30mm]{figuras/etsi.pdf}}; 
-				
+		     	{\includegraphics[height=30mm]{figuras/etsi.pdf}};
+
 		\node[anchor=north west, %anchor is upper left corner of the graphic
 		      	xshift=57mm, %shifting around
-		      	yshift=-265mm] 
+		      	yshift=-265mm]
 		     	at (current page.north west) %left upper corner of the page
 		     	{\includegraphics[width=2.5cm]{#1}}; % Logo de la Universidad
-	
+
 		\node[anchor=north west, %anchor is upper left corner of the graphic
 		      	xshift=141mm, %shifting around
-		      	yshift=-265mm] 
+		      	yshift=-265mm]
 		     	at (current page.north west) %left upper corner of the page
 			{\includegraphics[height=2.5cm]{#2}}; % Logo del Departamento, si lo hubiera
-		\end{pgfonlayer} 
+		\end{pgfonlayer}
 
-		% Todo el texto 
+		% Todo el texto
 		\begin{pgfonlayer}{foreground}
 
-		\node[align=left, anchor=north west] 
-			at ([xshift=40mm,yshift=-25mm]current page.north west) (name) 
+		\node[align=left, anchor=north west]
+			at ([xshift=40mm,yshift=-25mm]current page.north west) (name)
 			{\begin{minipage}{\textwidth}
 				{\huge \elnombretrabajo}\\
 				{\huge \latitulacion}
 			\end{minipage}};
-  
-		\node[align=left, anchor=north west] 
-			at ([xshift=40mm,yshift=-130mm]current page.north west) (name) 
+
+		\node[align=left, anchor=north west]
+			at ([xshift=40mm,yshift=-130mm]current page.north west) (name)
 			{\begin{minipage}{0.85\textwidth}
 				\setstretch{2}
 				{\huge \eltitulo}
 			\end{minipage}};
-  
-		\node[align=left, anchor=north west] 
-			at ([xshift=40mm,yshift=-165mm]current page.north west) (name) 
+
+		\node[align=left, anchor=north west]
+			at ([xshift=40mm,yshift=-165mm]current page.north west) (name)
 			{\begin{minipage}{0.90\textwidth}
 				\setstretch{2}
 				{\Large Autor:\elautor}\newline
 				{\Large Tutor:\eldirector}
 			\end{minipage}};
-  
-		\node[align=center, anchor=north west] 
-			at ([xshift=45mm,yshift=-215mm]current page.north west) (name) 
+
+		\node[align=center, anchor=north west]
+			at ([xshift=45mm,yshift=-215mm]current page.north west) (name)
   			{\begin{minipage}{0.80\textwidth}
 				\centering
 				\color[rgb]{1,1,1}%{0.801,0.58627,0.47647}
@@ -131,12 +131,12 @@
 				\elcentro\\
 				\launiversidad\\
 				\vspace{0.5cm}
-				\normalfont\fontsize{\lnormal}{\lbnormal}\selectfont Sevilla, \lafecha		
+				\normalfont\fontsize{\lnormal}{\lbnormal}\selectfont Sevilla, \lafecha
 			\end{minipage}};
 
 		\end{pgfonlayer}
 	\end{tikzpicture}
-	
+
 	\newpage\thispagestyle{empty}\mbox{}
 	\clearpage
 	\firstpagePFC
@@ -182,9 +182,9 @@
 		\vskip 5pt
 		\normalfont\fontsize{\lnormal}{\lbnormal}\selectfont Sevilla, \lafecha
 	\end{center}
- 
+
 	\vfill
-	\newpage\mbox{}\clearpage 
+	\newpage\mbox{}\clearpage
 }% First page
 
 %
